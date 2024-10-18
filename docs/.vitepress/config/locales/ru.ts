@@ -25,6 +25,11 @@ export const ru = defineConfig({
               { text: 'Быстрый старт', link: 'getting-started' },
             ],
           },
+          {
+            text: 'Основы',
+            collapsed: false,
+            items: [{ text: 'Синтаксис', link: 'syntax' }],
+          },
         ],
       },
     },

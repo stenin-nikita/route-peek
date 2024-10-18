@@ -25,6 +25,11 @@ export const en = defineConfig({
               { text: 'Getting Started', link: 'getting-started' },
             ],
           },
+          {
+            text: 'Basic',
+            collapsed: false,
+            items: [{ text: 'Syntax', link: 'syntax' }],
+          },
         ],
       },
     },
