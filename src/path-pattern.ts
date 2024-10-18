@@ -17,7 +17,7 @@ export interface CapturingGroup {
 
 export class PathPattern {
   #routePath: string;
-  #pattern: RegExp;
+  #re: RegExp;
   #capturingGroups: CapturingGroup[] = [];
   #segments: Segment[];
   #score = 0;
@@ -27,7 +27,7 @@ export class PathPattern {
 
     this.#segments = parser.parse();
     this.#routePath = routePath;
-    this.#pattern = this.#createRegExp();
+    this.#re = this.#createRegExp();
   }
 
   get score() {
@@ -38,17 +38,21 @@ export class PathPattern {
     return this.#routePath;
   }
 
-  get pattern() {
-    return this.#pattern;
+  get re() {
+    return this.#re;
   }
 
   get segments() {
     return this.#segments;
   }
 
+  test(path: string) {
+    return this.#re.test(path);
+  }
+
   match(path: string) {
     const keys = this.#capturingGroups;
-    const match = path.match(this.#pattern);
+    const match = path.match(this.#re);
 
     if (!match) {
       return null;
