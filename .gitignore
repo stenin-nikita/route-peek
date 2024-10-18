@@ -3,8 +3,9 @@
 *-error.log
 /.idea
 /.nyc_output
-/dist
-/lib
 /tmp
+dist
+lib
 node_modules
 coverage
+docs/.vitepress/cache
