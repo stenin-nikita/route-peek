@@ -5,6 +5,7 @@ import { ru } from './locales/ru';
 export default defineConfig({
   srcDir: 'src',
   outDir: 'dist',
+  base: '/route-peek/',
 
   title: 'Route Peek',
 
