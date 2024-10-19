@@ -3,7 +3,7 @@ layout: home
 
 hero:
   name: Route Peek
-  text: The library for creating matches with route patterns
+  text: The library for creating and matching dynamic routes
   actions:
     - theme: brand
       text: Getting Started

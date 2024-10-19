@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress';
 
 export const ru = defineConfig({
   lang: 'ru-RU',
-  description: 'Библиотека для создания совпадений с шаблонами маршрутов',
+  description: 'Библиотека для создания и сопоставления динамических маршрутов',
 
   themeConfig: {
     nav: [

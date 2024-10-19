@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress';
 
 export const en = defineConfig({
   lang: 'en-US',
-  description: 'Library for creating matches with route patterns',
+  description: 'The library for creating and matching dynamic routes',
 
   themeConfig: {
     nav: [

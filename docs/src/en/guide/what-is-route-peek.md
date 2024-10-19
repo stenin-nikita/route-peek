@@ -1,3 +1,3 @@
 # What is Route Peek?
 
-Route Peek is a library that defines syntax to create matches with route patterns.
+Route Peek is a library for creating and matching dynamic routes.
