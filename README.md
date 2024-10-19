@@ -1,9 +1,26 @@
-# Route Peek
+# 🧱 Route Peek
+
+![NPM Version](https://img.shields.io/npm/v/route-peek)
+![NPM Downloads](https://img.shields.io/npm/dm/route-peek)
+![npm bundle size](https://img.shields.io/bundlephobia/minzip/route-peek)
+![NPM License](https://img.shields.io/npm/l/route-peek)
+
+The library for creating and matching dynamic routes.
+
+## Documentation
+
+👉 Read the [Route Peek docs](https://stenin-nikita.github.io/route-peek/)
+
+## Prerequisites
+
+- [Node.js](https://nodejs.org/) version 18 or higher.
 
 ## Installation
 
+You can install `route-peek` using the JavaScript package manager:
+
 ```shell
-npm install route-peek --save
+npm add route-peek
 ```
 
 ## Usage
@@ -11,14 +28,10 @@ npm install route-peek --save
 ```ts
 import { PathPattern } from 'route-peek';
 
-const pattern = new PathPattern('/users/{id:\\d+}/edit');
+const pattern = new PathPattern('/users/{id:[0-9]+}');
 
-pattern.scope; // number
-pattern.routePath; // /users/{id:\\d+}/edit
-pattern.pattern; // RegExp
-pattern.segments; // Segment[]
-pattern.match('/users/12/edit'); // { id: '12' }
-pattern.match('/users/12'); // null
+console.log(pattern.test('/users/1234')); // true
+console.log(pattern.match('/users/1234')); // { id: '1234' }
 ```
 
 ## License
