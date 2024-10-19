@@ -12,4 +12,13 @@ hero:
       text: View on GitHub
       link: https://github.com/stenin-nikita/route-peek
       target: _blank
+
+features:
+  - icon: 💪
+    title: Power and flexibility
+    details: A powerful and flexible template system is used, which makes it easy to describe complex patterns.
+
+  - icon: 🔢
+    title: Path ranking
+    details: Points are calculated for each template, which allow you to sort the routes in the right order.
 ---
