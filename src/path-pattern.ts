@@ -71,7 +71,7 @@ export class PathPattern {
       const value: string = match[i] || '';
       const key = keys[i - 1];
 
-      params[key.name] = value && key.isRepeatable ? value.split('/') : value;
+      params[key.name] = key.isRepeatable ? value.split('/') : value;
     }
 
     return params;
