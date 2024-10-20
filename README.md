@@ -31,7 +31,7 @@ import { PathPattern } from 'route-peek';
 const pattern = new PathPattern('/users/{id:[0-9]+}');
 
 console.log(pattern.test('/users/1234')); // true
-console.log(pattern.match('/users/1234')); // { id: '1234' }
+console.log(pattern.exec('/users/1234')); // { id: '1234' }
 ```
 
 ## License
