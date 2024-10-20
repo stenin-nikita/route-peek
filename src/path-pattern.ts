@@ -8,11 +8,16 @@ export enum Score {
   CUSTOM_REG_EXP = 10,
   OPTIONAL = -8,
   REPEATABLE = -20,
+  CASE_SENSITIVE = 4,
 }
 
 export interface CapturingGroup {
   name: string;
   isRepeatable: boolean;
+}
+
+export interface PathPatternOptions {
+  ignoreCase?: boolean;
 }
 
 export class PathPattern {
@@ -21,10 +26,12 @@ export class PathPattern {
   #capturingGroups: CapturingGroup[] = [];
   #segments: Segment[];
   #score = 0;
+  #ignoreCase: boolean;
 
-  constructor(routePath: string) {
+  constructor(routePath: string, options: PathPatternOptions = {}) {
     const parser = new Parser(routePath);
 
+    this.#ignoreCase = options.ignoreCase ?? false;
     this.#segments = parser.parse();
     this.#routePath = routePath;
     this.#re = this.#createRegExp();
@@ -80,7 +87,13 @@ export class PathPattern {
       pattern += segmentPatterm;
     }
 
-    return new RegExp(`^${pattern}$`);
+    if (!this.#ignoreCase) {
+      this.#score += Score.CASE_SENSITIVE;
+    }
+
+    const flags = this.#ignoreCase ? 'i' : '';
+
+    return new RegExp(`^${pattern}$`, flags);
   }
 
   #createPattern(segment: Segment) {
