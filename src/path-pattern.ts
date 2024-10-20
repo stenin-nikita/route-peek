@@ -57,7 +57,7 @@ export class PathPattern {
     return this.#re.test(path);
   }
 
-  match(path: string) {
+  exec(path: string) {
     const keys = this.#capturingGroups;
     const match = path.match(this.#re);
 
