@@ -24,7 +24,7 @@ const SEGMENT_TOKENS = {
   [TokenType.DELIMETER]: true,
 } as Record<TokenType, boolean | undefined>;
 
-const DEFAULT_PATTERN = '[^/]+';
+export const DEFAULT_PATTERN = '[^/]+';
 
 export class Parser {
   #lexer: Lexer;

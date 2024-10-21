@@ -1,4 +1,4 @@
-import { Parser } from './parser';
+import { DEFAULT_PATTERN, Parser } from './parser';
 import { ElementType, type Segment, SegmentType } from './types';
 import { escapeString, isOptionalModifier, isRepeatableModifier } from './utils';
 
@@ -125,7 +125,7 @@ export class PathPattern {
             case ElementType.PATTERN:
               const { pattern } = element;
 
-              if (pattern !== '[^/]+') {
+              if (pattern !== DEFAULT_PATTERN) {
                 this.#score += Score.CUSTOM_REG_EXP;
               }
 
