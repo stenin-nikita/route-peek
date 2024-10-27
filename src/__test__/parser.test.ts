@@ -87,7 +87,7 @@ describe('Parser', () => {
       expect(result).toEqual([
         {
           type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: 'id', pattern: '[^/]+' }],
+          elements: [{ type: ElementType.PATTERN, name: 'id', pattern: '[^\\/]+' }],
           modifier: SegmentModifier.NONE,
         },
       ]);
@@ -101,12 +101,12 @@ describe('Parser', () => {
       expect(result).toEqual([
         {
           type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: 'page', pattern: '[^/]+' }],
+          elements: [{ type: ElementType.PATTERN, name: 'page', pattern: '[^\\/]+' }],
           modifier: SegmentModifier.NONE,
         },
         {
           type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: 'id', pattern: '[^/]+' }],
+          elements: [{ type: ElementType.PATTERN, name: 'id', pattern: '[^\\/]+' }],
           modifier: SegmentModifier.NONE,
         },
       ]);
@@ -176,7 +176,7 @@ describe('Parser', () => {
       expect(result).toEqual([
         {
           type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^/]+' }],
+          elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+' }],
           modifier: SegmentModifier.NONE,
         },
       ]);
@@ -190,12 +190,12 @@ describe('Parser', () => {
       expect(result).toEqual([
         {
           type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^/]+' }],
+          elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+' }],
           modifier: SegmentModifier.NONE,
         },
         {
           type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: '1', pattern: '[^/]+' }],
+          elements: [{ type: ElementType.PATTERN, name: '1', pattern: '[^\\/]+' }],
           modifier: SegmentModifier.NONE,
         },
       ]);
@@ -209,7 +209,7 @@ describe('Parser', () => {
       expect(result).toEqual([
         {
           type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^/]+' }],
+          elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+' }],
           modifier: SegmentModifier.OPTIONAL,
         },
       ]);
@@ -223,7 +223,7 @@ describe('Parser', () => {
       expect(result).toEqual([
         {
           type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^/]+' }],
+          elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+' }],
           modifier: SegmentModifier.ZERO_OR_MORE,
         },
       ]);
@@ -237,7 +237,7 @@ describe('Parser', () => {
       expect(result).toEqual([
         {
           type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^/]+' }],
+          elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+' }],
           modifier: SegmentModifier.ONE_OR_MORE,
         },
       ]);
