@@ -70,8 +70,19 @@ export class PathPattern {
     for (let i = 1, len = match.length; i < len; i++) {
       const value: string = match[i] || '';
       const key = keys[i - 1];
+      const param = params[key.name];
 
-      params[key.name] = key.isRepeatable ? value.split('/') : value;
+      if (param) {
+        const values = key.isRepeatable ? value.split('/') : [value];
+
+        if (Array.isArray(param)) {
+          param.push(...values);
+        } else {
+          params[key.name] = [param, ...values];
+        }
+      } else {
+        params[key.name] = key.isRepeatable ? value.split('/') : value;
+      }
     }
 
     return params;

@@ -348,12 +348,12 @@ describe('PathPattern', () => {
       expect(result).toEqual(null);
     });
 
-    it('should extract last param with same name', () => {
-      const pattern = new PathPattern('/{page}/{id}/{id}');
+    it('should extract param with same name', () => {
+      const pattern = new PathPattern('/users/{id}/comments/{id}');
 
-      const result = pattern.exec('/users/12/34');
+      const result = pattern.exec('/users/12/comments/34');
 
-      expect(result).toEqual({ page: 'users', id: '34' });
+      expect(result).toEqual({ id: ['12', '34'] });
     });
   });
 });
