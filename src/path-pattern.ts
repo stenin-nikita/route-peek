@@ -104,6 +104,10 @@ export class PathPattern {
 
     const flags = this.#ignoreCase ? 'i' : '';
 
+    if (pattern === '/') {
+      pattern = `(?:${pattern}|)`;
+    }
+
     return new RegExp(`^${pattern}$`, flags);
   }
 
@@ -134,7 +138,7 @@ export class PathPattern {
               break;
 
             case ElementType.PATTERN:
-              const { pattern } = element;
+              const pattern = isOptional ? `${element.pattern}|` : element.pattern;
 
               if (pattern !== DEFAULT_PATTERN) {
                 this.#score += Score.CUSTOM_REG_EXP;
