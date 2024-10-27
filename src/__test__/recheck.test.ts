@@ -15,8 +15,7 @@ const TEST_CASES = [
   { routePath: '/file/{path}*' },
   { routePath: '/{path}+' },
   { routePath: '/{path}+/' },
-  // TODO: redos fix
-  // { routePath: '/{filename}.{ext}' },
+  { routePath: '/{filename}.{ext}' },
   { routePath: '/{filename:[a-z]+}.{ext:css|js}' },
   { routePath: '/{year:\\d{4}}-{month:\\d{2}}-{day:\\d{2}}' },
 ];
@@ -25,7 +24,7 @@ describe('recheck', () => {
   it.each(TEST_CASES)('$routePath should be safe', ({ routePath }) => {
     const pattern = new PathPattern(routePath);
 
-    const result = checkSync(pattern.re.source, '');
+    const result = checkSync(pattern.re.source, pattern.re.flags);
 
     expect(result.status).toBe('safe');
   });

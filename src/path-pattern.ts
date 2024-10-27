@@ -123,35 +123,58 @@ export class PathPattern {
       case SegmentType.FIXED: {
         this.#score += Score.FIXED;
         segmentPattern += escapeString(segment.element.value);
+
         break;
       }
 
       case SegmentType.DYNAMIC: {
         this.#score += Score.DYNAMIC;
 
-        for (let i = 0, len = segment.elements.length; i < len; i++) {
+        const len = segment.elements.length;
+        const isPossibleUnsafe = len > 1;
+
+        let hasDefaultPattern = false;
+        let refPattern = '';
+
+        for (let i = 0; i < len; i++) {
           const element = segment.elements[i];
 
           switch (element.type) {
-            case ElementType.STRING:
-              segmentPattern += escapeString(element.value);
+            case ElementType.STRING: {
+              const value = escapeString(element.value);
+
+              segmentPattern += value;
+              refPattern += value;
+
               break;
+            }
 
-            case ElementType.PATTERN:
-              const pattern = isOptional ? `${element.pattern}|` : element.pattern;
-
-              if (pattern !== DEFAULT_PATTERN) {
+            case ElementType.PATTERN: {
+              if (element.pattern !== DEFAULT_PATTERN) {
                 this.#score += Score.CUSTOM_REG_EXP;
+              } else if (!hasDefaultPattern) {
+                hasDefaultPattern = true;
               }
+
+              const pattern = isOptional ? `${element.pattern}|` : element.pattern;
 
               segmentPattern += isRepeatable
                 ? `((?:${pattern})(?:/(?:${pattern}))*)`
                 : `(${pattern})`;
 
               capturingGroups.push({ name: element.name, isRepeatable });
+
+              refPattern += `\\${capturingGroups.length}`;
+
               break;
+            }
           }
         }
+
+        if (isPossibleUnsafe && hasDefaultPattern) {
+          segmentPattern = `(?=${segmentPattern})${refPattern}`;
+        }
+
         break;
       }
     }
