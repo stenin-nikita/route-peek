@@ -6,7 +6,7 @@
     "url": "https://github.com/stenin-nikita/route-peek"
   },
   "type": "module",
-  "version": "0.0.6",
+  "version": "0.1.0-beta",
   "keywords": [
     "path",
     "pattern",
