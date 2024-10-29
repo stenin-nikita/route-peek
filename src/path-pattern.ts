@@ -159,7 +159,7 @@ export class PathPattern {
               const pattern = isOptional ? `${element.pattern}|` : element.pattern;
 
               segmentPattern += isRepeatable
-                ? `((?:${pattern})(?:/(?:${pattern}))*)`
+                ? `((?:${pattern})(?:/(?:${pattern}))*?)`
                 : `(${pattern})`;
 
               capturingGroups.push({ name: element.name, isRepeatable });
