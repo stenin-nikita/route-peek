@@ -18,6 +18,12 @@ const TEST_CASES = [
   { routePath: '/{filename}.{ext}' },
   { routePath: '/{filename:[a-z]+}.{ext:css|js}' },
   { routePath: '/{year:\\d{4}}-{month:\\d{2}}-{day:\\d{2}}' },
+  { routePath: '/*' },
+  { routePath: '/*/*' },
+  { routePath: '/*?' },
+  { routePath: '/**' },
+  { routePath: '/*+' },
+  { routePath: '/**/**' },
 ];
 
 describe('recheck', () => {

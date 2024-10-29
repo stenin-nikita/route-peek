@@ -392,6 +392,144 @@ describe('PathPattern', () => {
       });
     });
 
+    describe('/*', () => {
+      const pattern = new PathPattern('/*');
+
+      it(`should match with input '/about'`, () => {
+        const result = pattern.exec('/about');
+
+        expect(result).toEqual({ 0: 'about' });
+      });
+
+      it(`should not match with input '/'`, () => {
+        const result = pattern.exec('/');
+
+        expect(result).toEqual(null);
+      });
+
+      it(`should not match with input '/users/123'`, () => {
+        const result = pattern.exec('/users/123');
+
+        expect(result).toEqual(null);
+      });
+    });
+
+    describe('/*/*', () => {
+      const pattern = new PathPattern('/*/*');
+
+      it(`should not match with input '/about'`, () => {
+        const result = pattern.exec('/about');
+
+        expect(result).toEqual(null);
+      });
+
+      it(`should not match with input '/'`, () => {
+        const result = pattern.exec('/');
+
+        expect(result).toEqual(null);
+      });
+
+      it(`should match with input '/users/123'`, () => {
+        const result = pattern.exec('/users/123');
+
+        expect(result).toEqual({ 0: 'users', 1: '123' });
+      });
+    });
+
+    describe('/*?', () => {
+      const pattern = new PathPattern('/*?');
+
+      it(`should match with input '/'`, () => {
+        const result = pattern.exec('/');
+
+        expect(result).toEqual({ 0: '' });
+      });
+
+      it(`should match with input '/about'`, () => {
+        const result = pattern.exec('/about');
+
+        expect(result).toEqual({ 0: 'about' });
+      });
+
+      it(`should not match with input '/users/123'`, () => {
+        const result = pattern.exec('/users/123');
+
+        expect(result).toEqual(null);
+      });
+    });
+
+    describe('/**', () => {
+      const pattern = new PathPattern('/**');
+
+      it(`should match with input '/'`, () => {
+        const result = pattern.exec('/');
+
+        expect(result).toEqual({ 0: [''] });
+      });
+
+      it(`should match with input '/about'`, () => {
+        const result = pattern.exec('/about');
+
+        expect(result).toEqual({ 0: ['about'] });
+      });
+
+      it(`should match with input '/users/123'`, () => {
+        const result = pattern.exec('/users/123');
+
+        expect(result).toEqual({ 0: ['users', '123'] });
+      });
+    });
+
+    describe('/*+', () => {
+      const pattern = new PathPattern('/*+');
+
+      it(`should not match with input '/'`, () => {
+        const result = pattern.exec('/');
+
+        expect(result).toEqual(null);
+      });
+
+      it(`should match with input '/about'`, () => {
+        const result = pattern.exec('/about');
+
+        expect(result).toEqual({ 0: ['about'] });
+      });
+
+      it(`should match with input '/users/123'`, () => {
+        const result = pattern.exec('/users/123');
+
+        expect(result).toEqual({ 0: ['users', '123'] });
+      });
+    });
+
+    describe('/**/**', () => {
+      const pattern = new PathPattern('/**/**');
+
+      it(`should match with input '/'`, () => {
+        const result = pattern.exec('/');
+
+        expect(result).toEqual({ 0: [''], 1: [''] });
+      });
+
+      it(`should match with input '/about'`, () => {
+        const result = pattern.exec('/about');
+
+        expect(result).toEqual({ 0: ['about'], 1: [''] });
+      });
+
+      it(`should match with input '/users/123'`, () => {
+        const result = pattern.exec('/users/123');
+
+        expect(result).toEqual({ 0: ['users'], 1: ['123'] });
+      });
+
+      it(`should match with input '/users/12/comments/34'`, () => {
+        const result = pattern.exec('/users/12/comments/34');
+
+        expect(result).toEqual({ 0: ['users'], 1: ['12', 'comments', '34'] });
+      });
+    });
+
     it('should extract param with same name', () => {
       const pattern = new PathPattern('/users/{id}/comments/{id}');
 
