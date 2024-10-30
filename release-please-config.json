@@ -5,8 +5,7 @@
     ".": {}
   },
   "pull-request-header": "Auto generated release",
-  "group-pull-request-title-pattern": "chore: release v${version}",
-  "pull-request-title-pattern": "Release v${version}",
+  "pull-request-title-pattern": "chore: release v${version}",
   "include-component-in-tag": false,
   "include-v-in-tag": true,
   "prerelease": true,
@@ -33,11 +32,6 @@
       "type": "deps",
       "section": "Dependencies",
       "hidden": false
-    },
-    {
-      "type": "chore",
-      "section": "Miscellaneous",
-      "hidden": true
     }
   ]
 }
