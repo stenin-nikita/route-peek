@@ -11,7 +11,8 @@
   "include-v-in-tag": true,
   "prerelease": true,
   "versioning": "prerelease",
-  "prerelease-type": "beta",
+  "bump-minor-pre-major": true,
+  "bump-patch-for-minor-pre-major": true,
   "changelog-sections": [
     {
       "type": "feat",
