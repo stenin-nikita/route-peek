@@ -3,7 +3,7 @@
   "description": "Library for route pathname parsing",
   "repository": {
     "type": "git",
-    "url": "https://github.com/stenin-nikita/route-peek"
+    "url": "git+https://github.com/stenin-nikita/route-peek.git"
   },
   "type": "module",
   "version": "0.0.7",
