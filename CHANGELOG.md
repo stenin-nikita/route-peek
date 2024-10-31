@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.0.7](https://github.com/stenin-nikita/route-peek/compare/v0.0.6...v0.0.7) (2024-10-30)
+## [0.0.7](https://github.com/stenin-nikita/route-peek/compare/3e462836...v0.0.7) (2024-10-30)
 
 
 ### Features
