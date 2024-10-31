@@ -14,21 +14,36 @@ export const en = defineConfig({
     ],
 
     sidebar: {
-      '/guide/': {
-        base: '/guide/',
+      '/': {
+        base: '/',
         items: [
           {
             text: 'Introduction',
+            base: '/introdution/',
             collapsed: false,
             items: [
               { text: 'What is Route Peek?', link: 'what-is-route-peek' },
-              { text: 'Getting Started', link: 'getting-started' },
+              { text: 'Motivation', link: 'motivation' },
             ],
           },
           {
             text: 'Basic',
+            base: '/guide/',
             collapsed: false,
-            items: [{ text: 'Syntax', link: 'syntax' }],
+            items: [
+              { text: 'Getting Started', link: 'getting-started' },
+              { text: 'Patterns syntax', link: 'syntax' },
+            ],
+          },
+          {
+            text: 'Contribute',
+            base: '/contribute/',
+            collapsed: false,
+            items: [
+              { text: 'Discussions', link: 'discussions' },
+              { text: 'Contributing Guide', link: 'guide' },
+              { text: 'Changelog', link: 'changelog' },
+            ],
           },
         ],
       },

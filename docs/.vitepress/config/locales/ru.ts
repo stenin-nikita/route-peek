@@ -14,21 +14,36 @@ export const ru = defineConfig({
     ],
 
     sidebar: {
-      '/ru/guide/': {
-        base: '/ru/guide/',
+      '/ru/': {
+        base: '/ru/',
         items: [
           {
             text: 'Введение',
+            base: '/ru/introdution/',
             collapsed: false,
             items: [
               { text: 'Что такое Route Peek?', link: 'what-is-route-peek' },
-              { text: 'Быстрый старт', link: 'getting-started' },
+              { text: 'Мотивация', link: 'motivation' },
             ],
           },
           {
             text: 'Основы',
+            base: '/ru/guide/',
             collapsed: false,
-            items: [{ text: 'Синтаксис', link: 'syntax' }],
+            items: [
+              { text: 'Быстрый старт', link: 'getting-started' },
+              { text: 'Синтаксис шаблонов', link: 'syntax' },
+            ],
+          },
+          {
+            text: 'Участие и развитие',
+            base: '/ru/contribute/',
+            collapsed: false,
+            items: [
+              { text: 'Обсуждения', link: 'discussions' },
+              { text: 'Руководство по вкладу', link: 'guide' },
+              { text: 'Журнал изменений', link: 'changelog' },
+            ],
           },
         ],
       },
