@@ -49,6 +49,11 @@ export const ru = defineConfig({
       },
     },
 
+    editLink: {
+      pattern: 'https://github.com/stenin-nikita/route-peek/edit/main/docs/src/:path',
+      text: 'Предложить изменения к этой странице',
+    },
+
     footer: {
       message: 'Опубликовано под лицензией MIT.',
       copyright: '© 2024 – настоящее время, Никита Стенин',
