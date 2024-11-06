@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.8](https://github.com/stenin-nikita/route-peek/compare/v0.0.7...v0.0.8) (2024-11-06)
+
+
+### Features
+
+* move capturing groups to parser ([2ad44fb](https://github.com/stenin-nikita/route-peek/commit/2ad44fbbb2ae7d968abbe9e665f4bf644ef97023))
+
 ## [0.0.7](https://github.com/stenin-nikita/route-peek/compare/3e462836...v0.0.7) (2024-10-30)
 
 
