@@ -1,8 +1,10 @@
 import { Lexer } from './lexer';
 import {
+  type CapturingGroup,
   type DynamicSegment,
   ElementType,
   type FixedSegment,
+  type PathRoot,
   type PatternElement,
   type Segment,
   SegmentModifier,
@@ -29,7 +31,8 @@ export const DEFAULT_PATTERN = `[^\\/]+`;
 export class Parser {
   #lexer: Lexer;
   #nameIndex = 0;
-  #parsed: Segment[] | null = null;
+  #parsed: PathRoot | null = null;
+  #capturinGroups: CapturingGroup[] = [];
 
   constructor(input: string) {
     this.#lexer = new Lexer(input);
@@ -69,9 +72,13 @@ export class Parser {
       segments.push(this.#createFixedSegment(this.#createStringElement('')));
     }
 
-    this.#parsed = segments;
+    this.#parsed = {
+      input: lexer.input,
+      segments,
+      capturingGroups: this.#capturinGroups,
+    };
 
-    return segments;
+    return this.#parsed;
   }
 
   #parseSegment(): Segment {
@@ -194,6 +201,10 @@ export class Parser {
     elements: Array<StringElement | PatternElement>,
     modifier = SegmentModifier.NONE,
   ): DynamicSegment {
+    if (isRepeatableModifier(modifier)) {
+      this.#capturinGroups[this.#capturinGroups.length - 1].isRepeatable = true;
+    }
+
     return { type: SegmentType.DYNAMIC, elements, modifier };
   }
 
@@ -202,6 +213,14 @@ export class Parser {
   }
 
   #createPatternElement(name: string, pattern: string): PatternElement {
-    return { type: ElementType.PATTERN, name, pattern };
+    const index = this.#capturinGroups.length;
+
+    this.#capturinGroups.push({
+      name,
+      index,
+      isRepeatable: false,
+    });
+
+    return { type: ElementType.PATTERN, name, pattern, index };
   }
 }

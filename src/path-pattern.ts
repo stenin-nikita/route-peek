@@ -1,5 +1,5 @@
 import { DEFAULT_PATTERN, Parser } from './parser';
-import { ElementType, type Segment, SegmentType } from './types';
+import { ElementType, type PathRoot, type Segment, SegmentType } from './types';
 import { escapeString, isOptionalModifier, isRepeatableModifier } from './utils';
 
 export enum Score {
@@ -11,11 +11,6 @@ export enum Score {
   CASE_SENSITIVE = 4,
 }
 
-export interface CapturingGroup {
-  name: string;
-  isRepeatable: boolean;
-}
-
 export interface PathPatternOptions {
   ignoreCase?: boolean;
 }
@@ -23,8 +18,7 @@ export interface PathPatternOptions {
 export class PathPattern {
   #routePath: string;
   #re: RegExp;
-  #capturingGroups: CapturingGroup[] = [];
-  #segments: Segment[];
+  #pathRoot: PathRoot;
   #score = 0;
   #ignoreCase: boolean;
 
@@ -32,7 +26,7 @@ export class PathPattern {
     const parser = new Parser(routePath);
 
     this.#ignoreCase = options.ignoreCase ?? false;
-    this.#segments = parser.parse();
+    this.#pathRoot = parser.parse();
     this.#routePath = routePath;
     this.#re = this.#createRegExp();
   }
@@ -50,7 +44,7 @@ export class PathPattern {
   }
 
   get segments() {
-    return this.#segments;
+    return this.#pathRoot.segments;
   }
 
   test(path: string) {
@@ -58,7 +52,7 @@ export class PathPattern {
   }
 
   exec(path: string) {
-    const keys = this.#capturingGroups;
+    const capturingGroups = this.#pathRoot.capturingGroups;
     const match = path.match(this.#re);
 
     if (!match) {
@@ -69,7 +63,7 @@ export class PathPattern {
 
     for (let i = 1, len = match.length; i < len; i++) {
       const value: string = match[i] || '';
-      const key = keys[i - 1];
+      const key = capturingGroups[i - 1];
       const param = params[key.name];
 
       if (param) {
@@ -89,7 +83,7 @@ export class PathPattern {
   }
 
   #createRegExp() {
-    const segments = this.#segments;
+    const segments = this.segments;
     let pattern = '';
 
     for (let i = 0, l = segments.length; i < l; i++) {
@@ -113,7 +107,6 @@ export class PathPattern {
 
   #createPattern(segment: Segment) {
     const { modifier } = segment;
-    const capturingGroups = this.#capturingGroups;
     const isRepeatable = isRepeatableModifier(modifier);
     const isOptional = isOptionalModifier(modifier);
 
@@ -162,9 +155,7 @@ export class PathPattern {
                 ? `((?:${pattern})(?:/(?:${pattern}))*?)`
                 : `(${pattern})`;
 
-              capturingGroups.push({ name: element.name, isRepeatable });
-
-              refPattern += `\\${capturingGroups.length}`;
+              refPattern += `\\${element.index + 1}`;
 
               break;
             }

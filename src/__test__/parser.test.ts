@@ -16,13 +16,17 @@ describe('Parser', () => {
 
       const result = parser.parse();
 
-      expect(result).toEqual([
-        {
-          type: SegmentType.FIXED,
-          element: { type: ElementType.STRING, value: '' },
-          modifier: SegmentModifier.NONE,
-        },
-      ]);
+      expect(result).toEqual({
+        input: '',
+        segments: [
+          {
+            type: SegmentType.FIXED,
+            element: { type: ElementType.STRING, value: '' },
+            modifier: SegmentModifier.NONE,
+          },
+        ],
+        capturingGroups: [],
+      });
     });
 
     it('root', () => {
@@ -30,13 +34,17 @@ describe('Parser', () => {
 
       const result = parser.parse();
 
-      expect(result).toEqual([
-        {
-          type: SegmentType.FIXED,
-          element: { type: ElementType.STRING, value: '' },
-          modifier: SegmentModifier.NONE,
-        },
-      ]);
+      expect(result).toEqual({
+        input: '/',
+        segments: [
+          {
+            type: SegmentType.FIXED,
+            element: { type: ElementType.STRING, value: '' },
+            modifier: SegmentModifier.NONE,
+          },
+        ],
+        capturingGroups: [],
+      });
     });
 
     it('single static', () => {
@@ -44,13 +52,17 @@ describe('Parser', () => {
 
       const result = parser.parse();
 
-      expect(result).toEqual([
-        {
-          type: SegmentType.FIXED,
-          element: { type: ElementType.STRING, value: 'users' },
-          modifier: SegmentModifier.NONE,
-        },
-      ]);
+      expect(result).toEqual({
+        input: '/users',
+        segments: [
+          {
+            type: SegmentType.FIXED,
+            element: { type: ElementType.STRING, value: 'users' },
+            modifier: SegmentModifier.NONE,
+          },
+        ],
+        capturingGroups: [],
+      });
     });
 
     it('multiple static', () => {
@@ -58,23 +70,27 @@ describe('Parser', () => {
 
       const result = parser.parse();
 
-      expect(result).toEqual([
-        {
-          type: SegmentType.FIXED,
-          element: { type: ElementType.STRING, value: 'path' },
-          modifier: SegmentModifier.NONE,
-        },
-        {
-          type: SegmentType.FIXED,
-          element: { type: ElementType.STRING, value: 'to' },
-          modifier: SegmentModifier.NONE,
-        },
-        {
-          type: SegmentType.FIXED,
-          element: { type: ElementType.STRING, value: 'page' },
-          modifier: SegmentModifier.NONE,
-        },
-      ]);
+      expect(result).toEqual({
+        input: '/path/to/page',
+        segments: [
+          {
+            type: SegmentType.FIXED,
+            element: { type: ElementType.STRING, value: 'path' },
+            modifier: SegmentModifier.NONE,
+          },
+          {
+            type: SegmentType.FIXED,
+            element: { type: ElementType.STRING, value: 'to' },
+            modifier: SegmentModifier.NONE,
+          },
+          {
+            type: SegmentType.FIXED,
+            element: { type: ElementType.STRING, value: 'page' },
+            modifier: SegmentModifier.NONE,
+          },
+        ],
+        capturingGroups: [],
+      });
     });
   });
 
@@ -84,13 +100,17 @@ describe('Parser', () => {
 
       const result = parser.parse();
 
-      expect(result).toEqual([
-        {
-          type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: 'id', pattern: '[^\\/]+' }],
-          modifier: SegmentModifier.NONE,
-        },
-      ]);
+      expect(result).toEqual({
+        input: '/{id}',
+        segments: [
+          {
+            type: SegmentType.DYNAMIC,
+            elements: [{ type: ElementType.PATTERN, name: 'id', pattern: '[^\\/]+', index: 0 }],
+            modifier: SegmentModifier.NONE,
+          },
+        ],
+        capturingGroups: [{ name: 'id', index: 0, isRepeatable: false }],
+      });
     });
 
     it('multiple params', () => {
@@ -98,18 +118,25 @@ describe('Parser', () => {
 
       const result = parser.parse();
 
-      expect(result).toEqual([
-        {
-          type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: 'page', pattern: '[^\\/]+' }],
-          modifier: SegmentModifier.NONE,
-        },
-        {
-          type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: 'id', pattern: '[^\\/]+' }],
-          modifier: SegmentModifier.NONE,
-        },
-      ]);
+      expect(result).toEqual({
+        input: '/{page}/{id}',
+        segments: [
+          {
+            type: SegmentType.DYNAMIC,
+            elements: [{ type: ElementType.PATTERN, name: 'page', pattern: '[^\\/]+', index: 0 }],
+            modifier: SegmentModifier.NONE,
+          },
+          {
+            type: SegmentType.DYNAMIC,
+            elements: [{ type: ElementType.PATTERN, name: 'id', pattern: '[^\\/]+', index: 1 }],
+            modifier: SegmentModifier.NONE,
+          },
+        ],
+        capturingGroups: [
+          { name: 'page', index: 0, isRepeatable: false },
+          { name: 'id', index: 1, isRepeatable: false },
+        ],
+      });
     });
 
     it('param with custom regexp', () => {
@@ -117,13 +144,17 @@ describe('Parser', () => {
 
       const result = parser.parse();
 
-      expect(result).toEqual([
-        {
-          type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: 'id', pattern: '\\d+' }],
-          modifier: SegmentModifier.NONE,
-        },
-      ]);
+      expect(result).toEqual({
+        input: '/{id:\\d+}',
+        segments: [
+          {
+            type: SegmentType.DYNAMIC,
+            elements: [{ type: ElementType.PATTERN, name: 'id', pattern: '\\d+', index: 0 }],
+            modifier: SegmentModifier.NONE,
+          },
+        ],
+        capturingGroups: [{ name: 'id', index: 0, isRepeatable: false }],
+      });
     });
 
     it('param with static values', () => {
@@ -131,25 +162,33 @@ describe('Parser', () => {
 
       const result = parser.parse();
 
-      expect(result).toEqual([
-        {
-          type: SegmentType.FIXED,
-          element: { type: ElementType.STRING, value: 'posts' },
-          modifier: SegmentModifier.NONE,
-        },
-        {
-          type: SegmentType.DYNAMIC,
-          elements: [
-            { type: ElementType.PATTERN, name: 'year', pattern: '\\d{4}' },
-            { type: ElementType.STRING, value: '-' },
-            { type: ElementType.PATTERN, name: 'month', pattern: '\\d{2}' },
-            { type: ElementType.STRING, value: '-' },
-            { type: ElementType.PATTERN, name: 'day', pattern: '\\d{2}' },
-            { type: ElementType.STRING, value: '.html' },
-          ],
-          modifier: SegmentModifier.NONE,
-        },
-      ]);
+      expect(result).toEqual({
+        input: '/posts/{year:\\d{4}}-{month:\\d{2}}-{day:\\d{2}}.html',
+        segments: [
+          {
+            type: SegmentType.FIXED,
+            element: { type: ElementType.STRING, value: 'posts' },
+            modifier: SegmentModifier.NONE,
+          },
+          {
+            type: SegmentType.DYNAMIC,
+            elements: [
+              { type: ElementType.PATTERN, name: 'year', pattern: '\\d{4}', index: 0 },
+              { type: ElementType.STRING, value: '-' },
+              { type: ElementType.PATTERN, name: 'month', pattern: '\\d{2}', index: 1 },
+              { type: ElementType.STRING, value: '-' },
+              { type: ElementType.PATTERN, name: 'day', pattern: '\\d{2}', index: 2 },
+              { type: ElementType.STRING, value: '.html' },
+            ],
+            modifier: SegmentModifier.NONE,
+          },
+        ],
+        capturingGroups: [
+          { name: 'year', index: 0, isRepeatable: false },
+          { name: 'month', index: 1, isRepeatable: false },
+          { name: 'day', index: 2, isRepeatable: false },
+        ],
+      });
     });
 
     it('param with non-capturing group', () => {
@@ -157,13 +196,17 @@ describe('Parser', () => {
 
       const result = parser.parse();
 
-      expect(result).toEqual([
-        {
-          type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: 'id', pattern: '(?:\\d+)' }],
-          modifier: SegmentModifier.NONE,
-        },
-      ]);
+      expect(result).toEqual({
+        input: '/{id:(?:\\d+)}',
+        segments: [
+          {
+            type: SegmentType.DYNAMIC,
+            elements: [{ type: ElementType.PATTERN, name: 'id', pattern: '(?:\\d+)', index: 0 }],
+            modifier: SegmentModifier.NONE,
+          },
+        ],
+        capturingGroups: [{ name: 'id', index: 0, isRepeatable: false }],
+      });
     });
   });
 
@@ -173,13 +216,17 @@ describe('Parser', () => {
 
       const result = parser.parse();
 
-      expect(result).toEqual([
-        {
-          type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+' }],
-          modifier: SegmentModifier.NONE,
-        },
-      ]);
+      expect(result).toEqual({
+        input: '/*',
+        segments: [
+          {
+            type: SegmentType.DYNAMIC,
+            elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+', index: 0 }],
+            modifier: SegmentModifier.NONE,
+          },
+        ],
+        capturingGroups: [{ name: '0', index: 0, isRepeatable: false }],
+      });
     });
 
     it('multiple wildcards', () => {
@@ -187,18 +234,25 @@ describe('Parser', () => {
 
       const result = parser.parse();
 
-      expect(result).toEqual([
-        {
-          type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+' }],
-          modifier: SegmentModifier.NONE,
-        },
-        {
-          type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: '1', pattern: '[^\\/]+' }],
-          modifier: SegmentModifier.NONE,
-        },
-      ]);
+      expect(result).toEqual({
+        input: '/*/*',
+        segments: [
+          {
+            type: SegmentType.DYNAMIC,
+            elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+', index: 0 }],
+            modifier: SegmentModifier.NONE,
+          },
+          {
+            type: SegmentType.DYNAMIC,
+            elements: [{ type: ElementType.PATTERN, name: '1', pattern: '[^\\/]+', index: 1 }],
+            modifier: SegmentModifier.NONE,
+          },
+        ],
+        capturingGroups: [
+          { name: '0', index: 0, isRepeatable: false },
+          { name: '1', index: 1, isRepeatable: false },
+        ],
+      });
     });
 
     it('wildcard with optional modifier', () => {
@@ -206,13 +260,17 @@ describe('Parser', () => {
 
       const result = parser.parse();
 
-      expect(result).toEqual([
-        {
-          type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+' }],
-          modifier: SegmentModifier.OPTIONAL,
-        },
-      ]);
+      expect(result).toEqual({
+        input: '/*?',
+        segments: [
+          {
+            type: SegmentType.DYNAMIC,
+            elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+', index: 0 }],
+            modifier: SegmentModifier.OPTIONAL,
+          },
+        ],
+        capturingGroups: [{ name: '0', index: 0, isRepeatable: false }],
+      });
     });
 
     it('wildcard with zero or more modifier', () => {
@@ -220,13 +278,17 @@ describe('Parser', () => {
 
       const result = parser.parse();
 
-      expect(result).toEqual([
-        {
-          type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+' }],
-          modifier: SegmentModifier.ZERO_OR_MORE,
-        },
-      ]);
+      expect(result).toEqual({
+        input: '/**',
+        segments: [
+          {
+            type: SegmentType.DYNAMIC,
+            elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+', index: 0 }],
+            modifier: SegmentModifier.ZERO_OR_MORE,
+          },
+        ],
+        capturingGroups: [{ name: '0', index: 0, isRepeatable: true }],
+      });
     });
 
     it('wildcard with one or more modifier', () => {
@@ -234,13 +296,17 @@ describe('Parser', () => {
 
       const result = parser.parse();
 
-      expect(result).toEqual([
-        {
-          type: SegmentType.DYNAMIC,
-          elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+' }],
-          modifier: SegmentModifier.ONE_OR_MORE,
-        },
-      ]);
+      expect(result).toEqual({
+        input: '/*+',
+        segments: [
+          {
+            type: SegmentType.DYNAMIC,
+            elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+', index: 0 }],
+            modifier: SegmentModifier.ONE_OR_MORE,
+          },
+        ],
+        capturingGroups: [{ name: '0', index: 0, isRepeatable: true }],
+      });
     });
   });
 

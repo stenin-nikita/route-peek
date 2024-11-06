@@ -41,6 +41,7 @@ export interface PatternElement {
   type: ElementType.PATTERN;
   name: string;
   pattern: string;
+  index: number;
 }
 
 export interface FixedSegment {
@@ -56,3 +57,15 @@ export interface DynamicSegment {
 }
 
 export type Segment = FixedSegment | DynamicSegment;
+
+export interface CapturingGroup {
+  name: string;
+  index: number;
+  isRepeatable: boolean;
+}
+
+export interface PathRoot {
+  input: string;
+  segments: Segment[];
+  capturingGroups: CapturingGroup[];
+}
