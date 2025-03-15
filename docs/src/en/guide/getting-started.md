@@ -34,26 +34,36 @@ bun add route-peek
 Import `route-peek` into your project:
 
 ```ts [index.ts]
-import { PathPattern } from 'route-peek';
+import { RouteMatcherBuilder } from 'route-peek';
 ```
 
-Define a pattern for the route you want to match:
+Define a routes you want to match:
 
 ```ts [index.ts]
-import { PathPattern } from 'route-peek';
+import { RouteMatcherBuilder } from 'route-peek';
 
-const pattern = new PathPattern('/users/{id:[0-9]+}'); // [!code focus]
+const builder = new RouteMatcherBuilder(); // [!code focus:6]
+
+builder.add('/');
+builder.add('/users/{id:[0-9]+}');
+
+const matcher = builder.build();
 ```
 
-Use the created pattern to match a URL and extract parameters:
+Use the created instance to match a URL and extract parameters:
 
 ```ts [index.ts]
-import { PathPattern } from 'route-peek';
+import { RouteMatcherBuilder } from 'route-peek';
 
-const pattern = new PathPattern('/users/{userId:[0-9]+}');
-const result = pattern.exec('/users/123'); // [!code focus:5]
+const builder = new RouteMatcherBuilder();
 
-if (result) {
-  console.log(result.userId); // Output: 123
+builder.add('/');
+builder.add('/users/{id:[0-9]+}');
+
+const matcher = builder.build();
+const matchedRoutes = matcher.match('/users/123'); // [!code focus:5]
+
+for (const matchedRoute of matchedRoutes) {
+  console.log(matchedRoute);
 }
 ```

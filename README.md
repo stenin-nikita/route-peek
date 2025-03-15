@@ -26,12 +26,18 @@ npm add route-peek
 ## Usage
 
 ```ts
-import { PathPattern } from 'route-peek';
+import { RouteMatcherBuilder } from 'route-peek';
 
-const pattern = new PathPattern('/users/{id:[0-9]+}');
+const builder = new RouteMatcherBuilder();
 
-console.log(pattern.test('/users/1234')); // true
-console.log(pattern.exec('/users/1234')); // { id: '1234' }
+builder.add('/');
+builder.add('/users');
+builder.add('/users/{id:[0-9]+}');
+
+const matcher = builder.build();
+const matchedRoutes = matcher.match('/users/1234');
+
+console.log(matchedRoutes); // [{"path":"/users/1234","route":"/users/{id:[0-9]+}","params":{"id":"1234"},"score":154}]
 ```
 
 ## License

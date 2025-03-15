@@ -34,26 +34,36 @@ bun add route-peek
 Импортируйте `route-peek` в ваш проект:
 
 ```ts [index.ts]
-import { PathPattern } from 'route-peek';
+import { RouteMatcherBuilder } from 'route-peek';
 ```
 
-Определите шаблон для маршрута, который вы хотите сопоставить:
+Определите маршруты, которые вы хотите сопоставить:
 
 ```ts [index.ts]
-import { PathPattern } from 'route-peek';
+import { RouteMatcherBuilder } from 'route-peek';
 
-const pattern = new PathPattern('/users/{id:[0-9]+}'); // [!code focus]
+const builder = new RouteMatcherBuilder(); // [!code focus:6]
+
+builder.add('/');
+builder.add('/users/{id:[0-9]+}');
+
+const matcher = builder.build();
 ```
 
-Используйте созданный шаблон для сопоставления URL и извлечения параметров:
+Используйте созданный экземпляр для сопоставления URL и извлечения параметров:
 
 ```ts [index.ts]
-import { PathPattern } from 'route-peek';
+import { RouteMatcherBuilder } from 'route-peek';
 
-const pattern = new PathPattern('/users/{userId:[0-9]+}');
-const result = pattern.exec('/users/123'); // [!code focus:5]
+const builder = new RouteMatcherBuilder();
 
-if (result) {
-  console.log(result.userId); // Вывод: 123
+builder.add('/');
+builder.add('/users/{id:[0-9]+}');
+
+const matcher = builder.build();
+const matchedRoutes = matcher.match('/users/123'); // [!code focus:5]
+
+for (const matchedRoute of matchedRoutes) {
+  console.log(matchedRoute);
 }
 ```
