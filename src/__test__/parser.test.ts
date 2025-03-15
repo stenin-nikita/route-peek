@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { Parser } from '../parser';
-import { ElementType, SegmentModifier, SegmentType } from '../types';
+import { ElementType, Score, SegmentModifier, SegmentType } from '../types';
 
 describe('Parser', () => {
   it('cached result', () => {
@@ -18,6 +18,7 @@ describe('Parser', () => {
 
       expect(result).toEqual({
         input: '',
+        score: Score.FIXED + Score.CASE_SENSITIVE,
         segments: [
           {
             type: SegmentType.FIXED,
@@ -36,6 +37,7 @@ describe('Parser', () => {
 
       expect(result).toEqual({
         input: '/',
+        score: Score.FIXED + Score.CASE_SENSITIVE,
         segments: [
           {
             type: SegmentType.FIXED,
@@ -54,6 +56,7 @@ describe('Parser', () => {
 
       expect(result).toEqual({
         input: '/users',
+        score: Score.FIXED + Score.CASE_SENSITIVE,
         segments: [
           {
             type: SegmentType.FIXED,
@@ -72,6 +75,7 @@ describe('Parser', () => {
 
       expect(result).toEqual({
         input: '/path/to/page',
+        score: Score.FIXED * 3 + Score.CASE_SENSITIVE,
         segments: [
           {
             type: SegmentType.FIXED,
@@ -102,6 +106,7 @@ describe('Parser', () => {
 
       expect(result).toEqual({
         input: '/{id}',
+        score: Score.DYNAMIC + Score.CASE_SENSITIVE,
         segments: [
           {
             type: SegmentType.DYNAMIC,
@@ -120,6 +125,7 @@ describe('Parser', () => {
 
       expect(result).toEqual({
         input: '/{page}/{id}',
+        score: Score.DYNAMIC * 2 + Score.CASE_SENSITIVE,
         segments: [
           {
             type: SegmentType.DYNAMIC,
@@ -146,6 +152,7 @@ describe('Parser', () => {
 
       expect(result).toEqual({
         input: '/{id:\\d+}',
+        score: Score.DYNAMIC + Score.CUSTOM_REG_EXP + Score.CASE_SENSITIVE,
         segments: [
           {
             type: SegmentType.DYNAMIC,
@@ -164,6 +171,7 @@ describe('Parser', () => {
 
       expect(result).toEqual({
         input: '/posts/{year:\\d{4}}-{month:\\d{2}}-{day:\\d{2}}.html',
+        score: Score.FIXED + Score.DYNAMIC + Score.CUSTOM_REG_EXP * 3 + Score.CASE_SENSITIVE,
         segments: [
           {
             type: SegmentType.FIXED,
@@ -198,6 +206,7 @@ describe('Parser', () => {
 
       expect(result).toEqual({
         input: '/{id:(?:\\d+)}',
+        score: Score.DYNAMIC + Score.CUSTOM_REG_EXP + Score.CASE_SENSITIVE,
         segments: [
           {
             type: SegmentType.DYNAMIC,
@@ -218,10 +227,11 @@ describe('Parser', () => {
 
       expect(result).toEqual({
         input: '/*',
+        score: Score.DYNAMIC + Score.CASE_SENSITIVE,
         segments: [
           {
             type: SegmentType.DYNAMIC,
-            elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+', index: 0 }],
+            elements: [{ type: ElementType.PATTERN, name: '0', pattern: '(?:[^\\/]+|)', index: 0 }],
             modifier: SegmentModifier.NONE,
           },
         ],
@@ -236,15 +246,16 @@ describe('Parser', () => {
 
       expect(result).toEqual({
         input: '/*/*',
+        score: Score.DYNAMIC * 2 + Score.CASE_SENSITIVE,
         segments: [
           {
             type: SegmentType.DYNAMIC,
-            elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+', index: 0 }],
+            elements: [{ type: ElementType.PATTERN, name: '0', pattern: '(?:[^\\/]+|)', index: 0 }],
             modifier: SegmentModifier.NONE,
           },
           {
             type: SegmentType.DYNAMIC,
-            elements: [{ type: ElementType.PATTERN, name: '1', pattern: '[^\\/]+', index: 1 }],
+            elements: [{ type: ElementType.PATTERN, name: '1', pattern: '(?:[^\\/]+|)', index: 1 }],
             modifier: SegmentModifier.NONE,
           },
         ],
@@ -262,10 +273,11 @@ describe('Parser', () => {
 
       expect(result).toEqual({
         input: '/*?',
+        score: Score.DYNAMIC + Score.OPTIONAL + Score.CASE_SENSITIVE,
         segments: [
           {
             type: SegmentType.DYNAMIC,
-            elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+', index: 0 }],
+            elements: [{ type: ElementType.PATTERN, name: '0', pattern: '(?:[^\\/]+|)', index: 0 }],
             modifier: SegmentModifier.OPTIONAL,
           },
         ],
@@ -280,10 +292,11 @@ describe('Parser', () => {
 
       expect(result).toEqual({
         input: '/**',
+        score: Score.DYNAMIC + Score.REPEATABLE + Score.OPTIONAL + Score.CASE_SENSITIVE,
         segments: [
           {
             type: SegmentType.DYNAMIC,
-            elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+', index: 0 }],
+            elements: [{ type: ElementType.PATTERN, name: '0', pattern: '(?:[^\\/]+|)', index: 0 }],
             modifier: SegmentModifier.ZERO_OR_MORE,
           },
         ],
@@ -298,10 +311,11 @@ describe('Parser', () => {
 
       expect(result).toEqual({
         input: '/*+',
+        score: Score.DYNAMIC + Score.REPEATABLE + Score.CASE_SENSITIVE,
         segments: [
           {
             type: SegmentType.DYNAMIC,
-            elements: [{ type: ElementType.PATTERN, name: '0', pattern: '[^\\/]+', index: 0 }],
+            elements: [{ type: ElementType.PATTERN, name: '0', pattern: '(?:[^\\/]+|)', index: 0 }],
             modifier: SegmentModifier.ONE_OR_MORE,
           },
         ],
