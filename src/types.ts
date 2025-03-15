@@ -32,6 +32,15 @@ export enum ElementType {
   PATTERN,
 }
 
+export enum Score {
+  FIXED = 80,
+  DYNAMIC = 60,
+  CUSTOM_REG_EXP = 10,
+  OPTIONAL = -8,
+  REPEATABLE = -20,
+  CASE_SENSITIVE = 4,
+}
+
 export interface StringElement {
   type: ElementType.STRING;
   value: string;
@@ -68,4 +77,5 @@ export interface PathRoot {
   input: string;
   segments: Segment[];
   capturingGroups: CapturingGroup[];
+  score: number;
 }

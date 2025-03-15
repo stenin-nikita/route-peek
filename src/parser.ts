@@ -6,6 +6,7 @@ import {
   type FixedSegment,
   type PathRoot,
   type PatternElement,
+  Score,
   type Segment,
   SegmentModifier,
   SegmentType,
@@ -13,7 +14,7 @@ import {
   type Token,
   TokenType,
 } from './types';
-import { isRepeatableModifier } from './utils';
+import { isOptionalModifier, isRepeatableModifier } from './utils';
 
 const ELEMENT_TOKENS = {
   [TokenType.STRING]: true,
@@ -28,14 +29,21 @@ const SEGMENT_TOKENS = {
 
 export const DEFAULT_PATTERN = `[^\\/]+`;
 
+export const WILDCARD_PATTERN = `(?:[^\\/]+|)`;
+
 export class Parser {
   #lexer: Lexer;
   #nameIndex = 0;
   #parsed: PathRoot | null = null;
   #capturinGroups: CapturingGroup[] = [];
+  #score = 0;
 
-  constructor(input: string) {
+  constructor(input: string, ignoreCase?: boolean) {
     this.#lexer = new Lexer(input);
+
+    if (!ignoreCase) {
+      this.#score += Score.CASE_SENSITIVE;
+    }
   }
 
   parse() {
@@ -76,6 +84,7 @@ export class Parser {
       input: lexer.input,
       segments,
       capturingGroups: this.#capturinGroups,
+      score: this.#score,
     };
 
     return this.#parsed;
@@ -95,7 +104,7 @@ export class Parser {
         token = lexer.peekToken();
       }
     } else if (token.type === TokenType.ASTERISK) {
-      const element = this.#createPatternElement(String(this.#nameIndex++), DEFAULT_PATTERN);
+      const element = this.#createPatternElement(String(this.#nameIndex++), WILDCARD_PATTERN);
 
       lexer.nextToken();
       elements.push(element);
@@ -136,6 +145,8 @@ export class Parser {
     if (token.type === TokenType.PATTERN) {
       lexer.nextToken();
 
+      this.#score += Score.CUSTOM_REG_EXP;
+
       return token.value;
     }
 
@@ -173,6 +184,15 @@ export class Parser {
     const hasElements = elements.length > 0;
     const modifier = hasElements ? this.#parseModifier() : SegmentModifier.NONE;
     const isRepeatable = isRepeatableModifier(modifier);
+    const isOptional = isOptionalModifier(modifier);
+
+    if (isRepeatable) {
+      this.#score += Score.REPEATABLE;
+    }
+
+    if (isOptional) {
+      this.#score += Score.OPTIONAL;
+    }
 
     if (!hasElements) {
       elements.push(this.#createStringElement(''));
@@ -194,6 +214,8 @@ export class Parser {
   }
 
   #createFixedSegment(element: StringElement, modifier = SegmentModifier.NONE): FixedSegment {
+    this.#score += Score.FIXED;
+
     return { type: SegmentType.FIXED, element, modifier };
   }
 
@@ -201,6 +223,8 @@ export class Parser {
     elements: Array<StringElement | PatternElement>,
     modifier = SegmentModifier.NONE,
   ): DynamicSegment {
+    this.#score += Score.DYNAMIC;
+
     if (isRepeatableModifier(modifier)) {
       this.#capturinGroups[this.#capturinGroups.length - 1].isRepeatable = true;
     }
