@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.9](https://github.com/stenin-nikita/route-peek/compare/v0.0.8...v0.0.9) (2025-03-15)
+
+
+### Features
+
+* create new implementation based on fsm ([1548ddb](https://github.com/stenin-nikita/route-peek/commit/1548ddb329929a34b89160f753d9aa0a2e75c767))
+* move calculate score to parser ([5421581](https://github.com/stenin-nikita/route-peek/commit/54215813672e63162a6d65aef638980db2ea4135))
+* remove old implementation ([c2c3d60](https://github.com/stenin-nikita/route-peek/commit/c2c3d604603503c87e84f9ac4305f8cad1c5b898))
+
 ## [0.0.8](https://github.com/stenin-nikita/route-peek/compare/v0.0.7...v0.0.8) (2024-11-06)
 
 
