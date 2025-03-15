@@ -1,6 +1,7 @@
 import { checkSync } from 'recheck';
 import { describe, it, expect } from 'vitest';
-import { PathPattern } from '../path-pattern';
+import { NFA } from '../nfa';
+import { RouteRecord } from '../route-record';
 
 const TEST_CASES = [
   { routePath: '' },
@@ -28,10 +29,15 @@ const TEST_CASES = [
 
 describe('recheck', () => {
   it.each(TEST_CASES)('$routePath should be safe', ({ routePath }) => {
-    const pattern = new PathPattern(routePath);
+    const nfa = new NFA();
+    const record = new RouteRecord(routePath, undefined);
 
-    const result = checkSync(pattern.re.source, pattern.re.flags);
+    nfa.addRouteRecord(record);
 
-    expect(result.status).toBe('safe');
+    for (const pattern of nfa.patterns.values()) {
+      const result = checkSync(pattern.source, pattern.flags);
+
+      expect(result.status).toBe('safe');
+    }
   });
 });
