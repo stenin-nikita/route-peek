@@ -79,3 +79,12 @@ export interface PathRoot {
   capturingGroups: CapturingGroup[];
   score: number;
 }
+
+export type State = number;
+
+export interface Fragment {
+  in: State;
+  out: State;
+}
+
+export type MatchedParams = Record<string, string | string[] | undefined>;

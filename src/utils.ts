@@ -17,3 +17,13 @@ export function createToken(type: TokenType, value: string) {
 
   return token;
 }
+
+export function splitPath(path: string): string[] {
+  const segments = path.split('/');
+
+  if (segments[0] === '') {
+    segments.shift();
+  }
+
+  return segments;
+}

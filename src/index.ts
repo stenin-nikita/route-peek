@@ -1,4 +1,17 @@
-export { PathPattern } from './path-pattern';
-export type { PathPatternOptions } from './path-pattern';
-export { SegmentType, SegmentModifier, ElementType } from './types';
-export type { Segment, FixedSegment, DynamicSegment, StringElement, PatternElement } from './types';
+export { type MatchedRouteData, MatchedRoute } from './matched-route';
+export { RouteMatcher, type RouteMatcherOptions } from './route-matcher';
+export { RouteMatcherBuilder } from './route-matcher-builder';
+export { RouteRecord } from './route-record';
+export {
+  type MatchedParams,
+  type PathRoot,
+  type CapturingGroup,
+  type Segment,
+  type DynamicSegment,
+  type FixedSegment,
+  type PatternElement,
+  type StringElement,
+  ElementType,
+  SegmentModifier,
+  SegmentType,
+} from './types';
