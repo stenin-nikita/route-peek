@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.10](https://github.com/stenin-nikita/route-peek/compare/v0.0.9...v0.0.10) (2025-03-17)
+
+
+### Features
+
+* improve match params ([f4eeb4d](https://github.com/stenin-nikita/route-peek/commit/f4eeb4d9a5db8b3d51630605e7057b4db80bd8a8))
+
 ## [0.0.9](https://github.com/stenin-nikita/route-peek/compare/v0.0.8...v0.0.9) (2025-03-15)
 
 

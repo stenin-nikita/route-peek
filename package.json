@@ -6,7 +6,7 @@
     "url": "git+https://github.com/stenin-nikita/route-peek.git"
   },
   "type": "module",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "keywords": [
     "path",
     "pattern",
