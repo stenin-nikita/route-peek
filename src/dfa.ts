@@ -4,21 +4,22 @@ import { StateSet } from './state-set';
 import type { State } from './types';
 import type { RouteRecord } from './route-record';
 import { MatchedRoute } from './matched-route';
+import type { Pattern, PatternMatch } from './pattern';
 
-export class DFA<TPayload = void> extends FiniteAutomaton<RouteRecord<TPayload>[]> {
+export class DFA<TPayload = void> extends FiniteAutomaton<Set<RouteRecord<TPayload>>> {
   #transitions: Record<State, Record<string, State> | undefined> = {};
-  #patterns: Map<State, Map<string, RegExp>> = new Map();
+  #patterns: Map<State, Map<string, Pattern>> = new Map();
 
   get transitions() {
     return this.#transitions;
   }
 
-  addPattern(state: State, input: string, re: RegExp) {
+  addPattern(state: State, input: string, pattern: Pattern) {
     if (!this.#patterns.has(state)) {
       this.#patterns.set(state, new Map());
     }
 
-    this.#patterns.get(state)?.set(input, re);
+    this.#patterns.get(state)?.set(input, pattern);
   }
 
   addTransition(from: State, input: string, to: State) {
@@ -32,7 +33,7 @@ export class DFA<TPayload = void> extends FiniteAutomaton<RouteRecord<TPayload>[
     const numParts = parts.length;
     const currentStates = new StateSet(this.numStates);
     const nextStates = new StateSet(this.numStates);
-    const matchedMap = new Map<State, string[]>();
+    const matchedMap = new Map<State, PatternMatch[]>();
 
     currentStates.add(this.initialState);
 
@@ -46,6 +47,7 @@ export class DFA<TPayload = void> extends FiniteAutomaton<RouteRecord<TPayload>[
 
         if (numParts === 1 && part === '' && this.isAcceptState(currentState)) {
           nextStates.add(currentState);
+          break;
         }
 
         const nextState = transitions[`/${part}`];
@@ -58,12 +60,12 @@ export class DFA<TPayload = void> extends FiniteAutomaton<RouteRecord<TPayload>[
         const patterns = this.#patterns.get(currentState);
 
         if (patterns) {
-          for (const [key, re] of patterns) {
-            const match = part.match(re);
+          for (const [key, pattern] of patterns) {
+            const match = pattern.match(part);
 
             if (match) {
               const nextState = transitions[key];
-              const nextMatched = currentMatched.concat(match.slice(1));
+              const nextMatched = currentMatched.concat(match);
 
               nextStates.add(nextState);
               matchedMap.set(nextState, nextMatched);
@@ -90,7 +92,11 @@ export class DFA<TPayload = void> extends FiniteAutomaton<RouteRecord<TPayload>[
       }
 
       const matchedGroups = matchedMap.get(state) ?? [];
-      const records = this.getPayload(state) ?? [];
+      const records = this.getPayload(state);
+
+      if (!records) {
+        continue;
+      }
 
       for (const record of records) {
         const matchedRoute = new MatchedRoute(path, record, matchedGroups);

@@ -1,3 +1,4 @@
+import type { PatternMatch } from './pattern';
 import type { RouteRecord } from './route-record';
 import type { MatchedParams } from './types';
 
@@ -12,13 +13,13 @@ export interface MatchedRouteData<T = void> {
 export class MatchedRoute<TPayload = void> {
   #path: string;
   #record: RouteRecord<TPayload>;
-  #matchedGroups: string[];
+  #matched: PatternMatch[];
   #params?: MatchedParams;
 
-  constructor(path: string, record: RouteRecord<TPayload>, matchedGroups: string[]) {
+  constructor(path: string, record: RouteRecord<TPayload>, matched: PatternMatch[]) {
     this.#path = path;
     this.#record = record;
-    this.#matchedGroups = matchedGroups;
+    this.#matched = matched;
   }
 
   get path() {
@@ -30,7 +31,7 @@ export class MatchedRoute<TPayload = void> {
   }
 
   get params() {
-    this.#params ??= this.#record.createParams(this.#matchedGroups);
+    this.#params ??= this.#record.createParams(this.#matched);
 
     return this.#params;
   }

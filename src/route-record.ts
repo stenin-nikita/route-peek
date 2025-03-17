@@ -1,4 +1,5 @@
 import { Parser } from './parser';
+import type { PatternMatch } from './pattern';
 import type { MatchedParams, PathRoot } from './types';
 
 export class RouteRecord<T = void> {
@@ -25,47 +26,46 @@ export class RouteRecord<T = void> {
     return this.#ast;
   }
 
-  createParams(matchedGroups: string[]) {
+  createParams(matched: PatternMatch[]) {
     const params: MatchedParams = Object.create(null);
     const capturingGroups = this.#ast.capturingGroups;
+    const groupsCount = capturingGroups.length;
 
-    let groupIndex = 0;
+    let index = 0;
 
-    for (let index = 0, len = capturingGroups.length; index < len; index += 1) {
-      const { name, isRepeatable } = capturingGroups[index];
+    for (let groupIndex = 0; groupIndex < groupsCount; groupIndex += 1) {
+      const { name, isRepeatable } = capturingGroups[groupIndex];
+      const match = matched[index];
 
-      if (isRepeatable) {
-        const start = groupIndex;
-        const left = len - (index + 1);
+      if (match && match.pattern.hasCapturingGroup(this.routePath, groupIndex)) {
+        if (isRepeatable) {
+          const remaining = groupsCount - (groupIndex + 1);
+          const end = Math.max(matched.length - remaining, index + 1);
+          const values = matched.slice(index, end).map((m) => m.value);
 
-        groupIndex = Math.max(matchedGroups.length - left, start + 1);
+          index = end;
 
-        const value = matchedGroups.slice(start, groupIndex);
-
-        if (params[name]) {
-          if (Array.isArray(params[name])) {
-            params[name].push(...value);
-          } else {
-            params[name] = [params[name], ...value];
-          }
+          this.#setValue(params, name, values);
         } else {
-          params[name] = value;
+          this.#setValue(params, name, match.value);
+
+          index++;
         }
       } else {
-        const value = matchedGroups[groupIndex++] ?? '';
-
-        if (params[name]) {
-          if (Array.isArray(params[name])) {
-            params[name].push(value);
-          } else {
-            params[name] = [params[name], value];
-          }
-        } else {
-          params[name] = value;
-        }
+        this.#setValue(params, name, isRepeatable ? [] : '');
       }
     }
 
     return params;
+  }
+
+  #setValue(params: MatchedParams, name: string, value: string | string[]) {
+    if (params[name]) {
+      const values: string[] = [];
+
+      params[name] = values.concat(params[name], value);
+    } else {
+      params[name] = value;
+    }
   }
 }

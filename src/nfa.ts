@@ -1,5 +1,6 @@
 import { FiniteAutomaton, type FiniteAutomatonOptions } from './finite-automaton';
 import { DEFAULT_PATTERN } from './parser';
+import { Pattern } from './pattern';
 import type { RouteRecord } from './route-record';
 import { StateSet } from './state-set';
 import {
@@ -16,8 +17,9 @@ import { escapeString } from './utils';
 export class NFA<TPayload = void> extends FiniteAutomaton<RouteRecord<TPayload>> {
   #inputs: Set<string>;
   #transitions: Map<State, Map<string, StateSet>>;
-  #patterns: Map<string, RegExp>;
+  #patterns: Map<string, Pattern>;
   #epsilonTransitions: Map<State, StateSet>;
+  #currentRoute: string | null = null;
 
   constructor(options: FiniteAutomatonOptions = {}) {
     super(options);
@@ -50,11 +52,15 @@ export class NFA<TPayload = void> extends FiniteAutomaton<RouteRecord<TPayload>>
 
     this.addEpsilonTransition(initialFragment.in, initialFragment.out);
 
+    this.#currentRoute = record.routePath;
+
     const fragment = segments.reduce((prevFragment, segment) => {
       const nextFragment = this.#createFragmentForSegment(segment);
 
       return this.#createConcatFragment(prevFragment, nextFragment);
     }, initialFragment);
+
+    this.#currentRoute = null;
 
     this.addAcceptState(fragment.out, record);
 
@@ -118,11 +124,7 @@ export class NFA<TPayload = void> extends FiniteAutomaton<RouteRecord<TPayload>>
 
   #createFragmentForSegment(segment: Segment) {
     const input = this.#createSegmentInput(segment);
-
-    const fragment =
-      typeof input === 'string'
-        ? this.#createValueFragment(input)
-        : this.#createRegExpFragment(input);
+    const fragment = this.#createValueFragment(typeof input === 'string' ? input : input.key);
 
     switch (segment.modifier) {
       case SegmentModifier.ZERO_OR_MORE:
@@ -159,6 +161,7 @@ export class NFA<TPayload = void> extends FiniteAutomaton<RouteRecord<TPayload>>
 
     const len = segment.elements.length;
     const isPossibleUnsafe = len > 1;
+    const indices = new StateSet();
 
     for (let i = 0; i < len; i++) {
       const element = segment.elements[i];
@@ -177,6 +180,8 @@ export class NFA<TPayload = void> extends FiniteAutomaton<RouteRecord<TPayload>>
         }
 
         case ElementType.PATTERN: {
+          indices.add(element.index);
+
           if (!hasDefaultPattern && element.pattern === DEFAULT_PATTERN) {
             hasDefaultPattern = true;
           }
@@ -196,7 +201,20 @@ export class NFA<TPayload = void> extends FiniteAutomaton<RouteRecord<TPayload>>
       pattern = `(?=${pattern})(?:${ref})`;
     }
 
-    return new RegExp(`^${pattern}$`, this.ignoreCase ? 'i' : '');
+    const re = new RegExp(`^${pattern}$`, this.ignoreCase ? 'i' : '');
+    const key = re.toString();
+
+    let patternRe = this.#patterns.get(key);
+
+    if (!patternRe) {
+      patternRe = new Pattern(re);
+
+      this.#patterns.set(key, patternRe);
+    }
+
+    patternRe.appendCapturingGroups(this.#currentRoute!, indices);
+
+    return patternRe;
   }
 
   #createFragment(inState: State, outState: State) {
@@ -215,17 +233,6 @@ export class NFA<TPayload = void> extends FiniteAutomaton<RouteRecord<TPayload>>
     this.addTransition(inState, value, outState);
 
     return this.#createFragment(inState, outState);
-  }
-
-  #createRegExpFragment(re: RegExp) {
-    const input = re.toString();
-    const fragment = this.#createValueFragment(input);
-
-    if (!this.#patterns.has(input)) {
-      this.#patterns.set(input, re);
-    }
-
-    return fragment;
   }
 
   #createZeroOrMoreFragment(fragment: Fragment) {

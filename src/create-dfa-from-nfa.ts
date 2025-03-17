@@ -1,6 +1,7 @@
 import { DFA } from './dfa';
 import { HashMap } from './hash-map';
 import type { NFA } from './nfa';
+import type { RouteRecord } from './route-record';
 import { StateSet } from './state-set';
 import type { State } from './types';
 
@@ -19,7 +20,7 @@ export function createDFAFromNFA<T = void>(nfa: NFA<T>): DFA<T> {
   const acceptStateSet = nfa.getAcceptStates(initialStateSet);
 
   if (acceptStateSet.containsElements()) {
-    const records = Array.from(acceptStateSet, (s) => nfa.getPayload(s)!);
+    const records = createRouteRecordSet(nfa, acceptStateSet);
 
     dfa.addAcceptState(currentDfaState, records);
   }
@@ -51,10 +52,10 @@ export function createDFAFromNFA<T = void>(nfa: NFA<T>): DFA<T> {
       }
 
       if (newState.containsElements()) {
-        const re = nfa.patterns.get(input);
+        const pattern = nfa.patterns.get(input);
 
-        if (re) {
-          dfa.addPattern(currentDfaState, input, re);
+        if (pattern) {
+          dfa.addPattern(currentDfaState, input, pattern);
         }
 
         const nextDFAState = dfaStates.get(newState);
@@ -71,7 +72,7 @@ export function createDFAFromNFA<T = void>(nfa: NFA<T>): DFA<T> {
           const acceptStateSet = nfa.getAcceptStates(storeState);
 
           if (acceptStateSet.containsElements()) {
-            const records = Array.from(acceptStateSet, (s) => nfa.getPayload(s)!);
+            const records = createRouteRecordSet(nfa, acceptStateSet);
 
             dfa.addAcceptState(nextState, records);
           }
@@ -85,4 +86,18 @@ export function createDFAFromNFA<T = void>(nfa: NFA<T>): DFA<T> {
   }
 
   return dfa;
+}
+
+function createRouteRecordSet<T>(nfa: NFA<T>, acceptStateSet: StateSet) {
+  const recordSet = new Set<RouteRecord<T>>();
+
+  for (const acceptState of acceptStateSet) {
+    const payload = nfa.getPayload(acceptState);
+
+    if (payload) {
+      recordSet.add(payload);
+    }
+  }
+
+  return recordSet;
 }
