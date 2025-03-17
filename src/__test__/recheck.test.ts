@@ -35,7 +35,7 @@ describe('recheck', () => {
     nfa.addRouteRecord(record);
 
     for (const pattern of nfa.patterns.values()) {
-      const result = checkSync(pattern.source, pattern.flags);
+      const result = checkSync(pattern.re.source, pattern.re.flags);
 
       expect(result.status).toBe('safe');
     }
