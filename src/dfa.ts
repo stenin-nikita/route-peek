@@ -44,10 +44,12 @@ export class DFA<TPayload = void> extends FiniteAutomaton<Set<RouteRecord<TPaylo
         const currentState = currentStates.shift();
         const currentMatched = matchedMap.get(currentState) ?? [];
         const transitions = this.#transitions[currentState] ?? {};
+        const isAcceptedInitialState =
+          numParts === 1 && part === '' && this.isAcceptState(currentState);
 
-        if (numParts === 1 && part === '' && this.isAcceptState(currentState)) {
+        if (isAcceptedInitialState) {
           nextStates.add(currentState);
-          break;
+          matchedMap.set(currentState, currentMatched);
         }
 
         const nextState = transitions[`/${part}`];
@@ -67,8 +69,12 @@ export class DFA<TPayload = void> extends FiniteAutomaton<Set<RouteRecord<TPaylo
               const nextState = transitions[key];
               const nextMatched = currentMatched.concat(match);
 
-              nextStates.add(nextState);
-              matchedMap.set(nextState, nextMatched);
+              if (isAcceptedInitialState) {
+                matchedMap.set(currentState, nextMatched);
+              } else {
+                nextStates.add(nextState);
+                matchedMap.set(nextState, nextMatched);
+              }
             }
           }
         }
@@ -91,10 +97,10 @@ export class DFA<TPayload = void> extends FiniteAutomaton<Set<RouteRecord<TPaylo
         continue;
       }
 
-      const matchedGroups = matchedMap.get(state) ?? [];
+      const matchedGroups = matchedMap.get(state);
       const records = this.getPayload(state);
 
-      if (!records) {
+      if (!records || !matchedGroups) {
         continue;
       }
 
@@ -105,7 +111,9 @@ export class DFA<TPayload = void> extends FiniteAutomaton<Set<RouteRecord<TPaylo
       }
     }
 
-    result.sort((a, b) => b.score - a.score);
+    if (result.length > 1) {
+      result.sort((a, b) => b.score - a.score);
+    }
 
     return result;
   }

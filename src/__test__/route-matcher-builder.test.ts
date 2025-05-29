@@ -3,14 +3,20 @@ import { describe, expect, it } from 'vitest';
 import { type RouteMatcherOptions } from '../route-matcher';
 import { RouteMatcherBuilder } from '../route-matcher-builder';
 
-function createMatcher(routePath: string, options: RouteMatcherOptions = {}) {
+function createMatcher(routes: string | string[], options: RouteMatcherOptions = {}) {
   const builder = new RouteMatcherBuilder();
 
   if (options.ignoreCase) {
     builder.setIgnoreCase(options.ignoreCase);
   }
 
-  builder.add(routePath);
+  if (typeof routes === 'string') {
+    builder.add(routes);
+  } else {
+    for (const route of routes) {
+      builder.add(route);
+    }
+  }
 
   return builder.build();
 }
@@ -174,14 +180,14 @@ describe('RouteMatcherBuilder', () => {
         const result = matcher.match('');
 
         expect(result).toHaveLength(1);
-        expect(result[0]).toHaveProperty('params', { param: '' });
+        expect(result[0]).toHaveProperty('params', {});
       });
 
       it(`should match with input '/'`, () => {
         const result = matcher.match('/');
 
         expect(result).toHaveLength(1);
-        expect(result[0]).toHaveProperty('params', { param: '' });
+        expect(result[0]).toHaveProperty('params', {});
       });
 
       it(`should match with input '/users'`, () => {
@@ -230,7 +236,7 @@ describe('RouteMatcherBuilder', () => {
         const result = matcher.match('/users');
 
         expect(result).toHaveLength(1);
-        expect(result[0]).toHaveProperty('params', { id: '' });
+        expect(result[0]).toHaveProperty('params', {});
       });
     });
 
@@ -260,7 +266,7 @@ describe('RouteMatcherBuilder', () => {
         const result = matcher.match('/users/');
 
         expect(result).toHaveLength(1);
-        expect(result[0]).toHaveProperty('params', { id: '' });
+        expect(result[0]).toHaveProperty('params', {});
       });
 
       it(`should not match with input '/users'`, () => {
@@ -277,7 +283,7 @@ describe('RouteMatcherBuilder', () => {
         const result = matcher.match('/users');
 
         expect(result).toHaveLength(1);
-        expect(result[0]).toHaveProperty('params', { locale: '' });
+        expect(result[0]).toHaveProperty('params', {});
       });
 
       it(`should match with input '/en/users'`, () => {
@@ -529,7 +535,7 @@ describe('RouteMatcherBuilder', () => {
         const result = matcher.match('/');
 
         expect(result).toHaveLength(1);
-        expect(result[0]).toHaveProperty('params', { 0: [] });
+        expect(result[0]).toHaveProperty('params', { 0: [''] });
       });
 
       it(`should match with input '/about'`, () => {
@@ -593,7 +599,7 @@ describe('RouteMatcherBuilder', () => {
         const result = matcher.match('/');
 
         expect(result).toHaveLength(1);
-        expect(result[0]).toHaveProperty('params', { 0: [], 1: [] });
+        expect(result[0]).toHaveProperty('params', { 0: [''], 1: [] });
       });
 
       it(`should match with input '/about'`, () => {
@@ -625,7 +631,7 @@ describe('RouteMatcherBuilder', () => {
         const result = matcher.match('/');
 
         expect(result).toHaveLength(1);
-        expect(result[0]).toHaveProperty('params', { id: '' });
+        expect(result[0]).toHaveProperty('params', {});
       });
 
       it(`should match with input '/blog-123'`, () => {
@@ -643,7 +649,7 @@ describe('RouteMatcherBuilder', () => {
         const result = matcher.match('/page');
 
         expect(result).toHaveLength(1);
-        expect(result[0]).toHaveProperty('params', { id: '' });
+        expect(result[0]).toHaveProperty('params', {});
       });
 
       it(`should match with input '/page/'`, () => {
@@ -676,14 +682,14 @@ describe('RouteMatcherBuilder', () => {
         const result = matcher.match('/entities/user');
 
         expect(result).toHaveLength(1);
-        expect(result[0]).toHaveProperty('params', { entity: 'user', locale: '', version: '' });
+        expect(result[0]).toHaveProperty('params', { entity: 'user' });
       });
 
       it(`should match with input '/entities/user/en'`, () => {
         const result = matcher.match('/entities/user/en');
 
         expect(result).toHaveLength(1);
-        expect(result[0]).toHaveProperty('params', { entity: 'user', locale: 'en', version: '' });
+        expect(result[0]).toHaveProperty('params', { entity: 'user', locale: 'en' });
       });
 
       it(`should match with input '/entities/user/en/123'`, () => {
@@ -701,7 +707,7 @@ describe('RouteMatcherBuilder', () => {
         const result = matcher.match('/entities/user/123');
 
         expect(result).toHaveLength(1);
-        expect(result[0]).toHaveProperty('params', { entity: 'user', locale: '123', version: '' });
+        expect(result[0]).toHaveProperty('params', { entity: 'user', locale: '123' });
       });
     });
 
@@ -712,15 +718,15 @@ describe('RouteMatcherBuilder', () => {
         const result = matcher.match('/entities/user');
 
         expect(result).toHaveLength(1);
-        expect(result[0]).toHaveProperty('params', { entity: 'user', locale: '', version: '' });
+        expect(result[0]).toHaveProperty('params', { entity: 'user' });
       });
 
       it(`should match with input '/entities/user/en'`, () => {
         const result = matcher.match('/entities/user/en');
 
         expect(result).toHaveLength(2);
-        expect(result[0]).toHaveProperty('params', { entity: 'user', locale: '', version: 'en' });
-        expect(result[1]).toHaveProperty('params', { entity: 'user', locale: 'en', version: '' });
+        expect(result[0]).toHaveProperty('params', { entity: 'user', version: 'en' });
+        expect(result[1]).toHaveProperty('params', { entity: 'user', locale: 'en' });
       });
 
       it(`should match with input '/entities/user/en/123'`, () => {
@@ -738,7 +744,7 @@ describe('RouteMatcherBuilder', () => {
         const result = matcher.match('/entities/user/123');
 
         expect(result).toHaveLength(1);
-        expect(result[0]).toHaveProperty('params', { entity: 'user', locale: '', version: '123' });
+        expect(result[0]).toHaveProperty('params', { entity: 'user', version: '123' });
       });
     });
 
@@ -749,14 +755,14 @@ describe('RouteMatcherBuilder', () => {
         const result = matcher.match('/entities/user');
 
         expect(result).toHaveLength(1);
-        expect(result[0]).toHaveProperty('params', { entity: 'user', locale: '', version: '' });
+        expect(result[0]).toHaveProperty('params', { entity: 'user' });
       });
 
       it(`should match with input '/entities/user/en'`, () => {
         const result = matcher.match('/entities/user/en');
 
         expect(result).toHaveLength(1);
-        expect(result[0]).toHaveProperty('params', { entity: 'user', locale: 'en', version: '' });
+        expect(result[0]).toHaveProperty('params', { entity: 'user', locale: 'en' });
       });
 
       it(`should match with input '/entities/user/en/123'`, () => {
@@ -774,7 +780,19 @@ describe('RouteMatcherBuilder', () => {
         const result = matcher.match('/entities/user/123');
 
         expect(result).toHaveLength(1);
-        expect(result[0]).toHaveProperty('params', { entity: 'user', locale: '', version: '123' });
+        expect(result[0]).toHaveProperty('params', { entity: 'user', version: '123' });
+      });
+    });
+
+    describe(`['/', '/*?']`, () => {
+      const matcher = createMatcher(['/', '/*?']);
+
+      it(`should match with input '/'`, () => {
+        const result = matcher.match('/');
+
+        expect(result).toHaveLength(2);
+        expect(result[0]).toHaveProperty('params', {});
+        expect(result[1]).toHaveProperty('params', { '0': '' });
       });
     });
   });

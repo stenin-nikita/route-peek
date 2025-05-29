@@ -52,7 +52,9 @@ export class RouteRecord<T = void> {
           index++;
         }
       } else {
-        this.#setValue(params, name, isRepeatable ? [] : '');
+        if (isRepeatable) {
+          this.#setValue(params, name, []);
+        }
       }
     }
 
