@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.0.11](https://github.com/stenin-nikita/route-peek/compare/v0.0.10...v0.0.11) (2025-05-30)
+
+
+### Features
+
+* add id property to route record and matched route ([de7d14f](https://github.com/stenin-nikita/route-peek/commit/de7d14fa909fe80f076028a37e08b5b212ae5032))
+* support matching with trailing slash ([a2539bf](https://github.com/stenin-nikita/route-peek/commit/a2539bf2bc12e0aea30718142a2e4dc71f58be3b))
+* support trailing slash to parser ([471ba23](https://github.com/stenin-nikita/route-peek/commit/471ba23469e1594d412197692d4234863d86a31b))
+
+
+### Bug Fixes
+
+* fix some corner cases ([1ce113b](https://github.com/stenin-nikita/route-peek/commit/1ce113b2629d23c05bdb470d2b101d3e5a960753))
+
 ## [0.0.10](https://github.com/stenin-nikita/route-peek/compare/v0.0.9...v0.0.10) (2025-03-17)
 
 
