@@ -3,11 +3,18 @@ import { describe, expect, it } from 'vitest';
 import { type RouteMatcherOptions } from '../route-matcher';
 import { RouteMatcherBuilder } from '../route-matcher-builder';
 
-function createMatcher(routes: string | string[], options: RouteMatcherOptions = {}) {
+function createMatcher(
+  routes: string | string[],
+  options: RouteMatcherOptions & { trailing?: boolean } = {},
+) {
   const builder = new RouteMatcherBuilder();
 
   if (options.ignoreCase) {
     builder.setIgnoreCase(options.ignoreCase);
+  }
+
+  if (options.trailing) {
+    builder.setTrailing(options.trailing);
   }
 
   if (typeof routes === 'string') {
@@ -793,6 +800,87 @@ describe('RouteMatcherBuilder', () => {
         expect(result).toHaveLength(2);
         expect(result[0]).toHaveProperty('params', {});
         expect(result[1]).toHaveProperty('params', { '0': '' });
+      });
+    });
+
+    describe('/users/?', () => {
+      const matcher = createMatcher('/users/?');
+
+      it(`should match with input '/users'`, () => {
+        const result = matcher.match('/users');
+
+        expect(result).toHaveLength(1);
+        expect(result[0]).toHaveProperty('route', '/users/?');
+      });
+
+      it(`should match with input '/users/'`, () => {
+        const result = matcher.match('/users/');
+
+        expect(result).toHaveLength(1);
+        expect(result[0]).toHaveProperty('route', '/users/?');
+      });
+    });
+
+    describe(`['/users', '/users/', '/users/?']`, () => {
+      const matcher = createMatcher(['/users', '/users/', '/users/?']);
+
+      it(`should match with input '/users'`, () => {
+        const result = matcher.match('/users');
+
+        expect(result).toHaveLength(2);
+        expect(result[0]).toHaveProperty('route', '/users');
+        expect(result[1]).toHaveProperty('route', '/users/?');
+      });
+
+      it(`should match with input '/users/'`, () => {
+        const result = matcher.match('/users/');
+
+        expect(result).toHaveLength(2);
+        expect(result[0]).toHaveProperty('route', '/users/');
+        expect(result[1]).toHaveProperty('route', '/users/?');
+      });
+    });
+
+    describe(`/users with trailing`, () => {
+      const matcher = createMatcher('/users', { trailing: true });
+
+      it(`should match with input '/users'`, () => {
+        const result = matcher.match('/users');
+
+        expect(result).toHaveLength(1);
+        expect(result[0]).toHaveProperty('route', '/users/?');
+      });
+
+      it(`should match with input '/users/'`, () => {
+        const result = matcher.match('/users/');
+
+        expect(result).toHaveLength(1);
+        expect(result[0]).toHaveProperty('route', '/users/?');
+      });
+    });
+
+    describe(`['/', '/users', '/users/{id}'] with trailing`, () => {
+      const matcher = createMatcher(['/', '/users', '/users/{id}'], { trailing: true });
+
+      it(`should match with input '/'`, () => {
+        const result = matcher.match('/');
+
+        expect(result).toHaveLength(1);
+        expect(result[0]).toHaveProperty('route', '/');
+      });
+
+      it(`should match with input '/users/'`, () => {
+        const result = matcher.match('/users/');
+
+        expect(result).toHaveLength(1);
+        expect(result[0]).toHaveProperty('route', '/users/?');
+      });
+
+      it(`should match with input '/users/123/'`, () => {
+        const result = matcher.match('/users/123/');
+
+        expect(result).toHaveLength(1);
+        expect(result[0]).toHaveProperty('route', '/users/{id}/?');
       });
     });
   });

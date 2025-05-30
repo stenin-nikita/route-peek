@@ -88,10 +88,15 @@ export class DFA<TPayload = void> extends FiniteAutomaton<Set<RouteRecord<TPaylo
       }
     }
 
-    const result: MatchedRoute<TPayload>[] = [];
+    return this.#getMatchedRoutes(path, currentStates, matchedMap);
+  }
 
-    while (currentStates.containsElements()) {
-      const state = currentStates.shift();
+  #getMatchedRoutes(path: string, states: StateSet, matchedMap: Map<State, PatternMatch[]>) {
+    const result: MatchedRoute<TPayload>[] = [];
+    const seen: Record<number, Set<PatternMatch[]>> = {};
+
+    while (states.containsElements()) {
+      const state = states.shift();
 
       if (!this.isAcceptState(state)) {
         continue;
@@ -105,6 +110,14 @@ export class DFA<TPayload = void> extends FiniteAutomaton<Set<RouteRecord<TPaylo
       }
 
       for (const record of records) {
+        seen[record.id] ??= new Set();
+
+        if (seen[record.id].has(matchedGroups)) {
+          continue;
+        }
+
+        seen[record.id].add(matchedGroups);
+
         const matchedRoute = new MatchedRoute(path, record, matchedGroups);
 
         result.push(matchedRoute);

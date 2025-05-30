@@ -1,11 +1,12 @@
 import { RouteMatcher, type RouteMatcherOptions } from './route-matcher';
 import { RouteRecord } from './route-record';
+import { normalizeRoutePath } from './utils';
 
 export class RouteMatcherBuilder<T = void> {
   #counter = 1;
   #records: RouteRecord<T>[] = [];
-
   #ignoreCase = false;
+  #trailing = false;
 
   setIgnoreCase(value: boolean) {
     this.#ignoreCase = value;
@@ -13,8 +14,15 @@ export class RouteMatcherBuilder<T = void> {
     return this;
   }
 
+  setTrailing(value: boolean) {
+    this.#trailing = value;
+
+    return this;
+  }
+
   add(routePath: string, payload: T) {
-    const record = new RouteRecord(this.#counter++, routePath, payload);
+    const normalizedRoutePath = normalizeRoutePath(routePath, this.#trailing);
+    const record = new RouteRecord(this.#counter++, normalizedRoutePath, payload);
 
     this.#records.push(record);
 

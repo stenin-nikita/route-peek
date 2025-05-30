@@ -27,3 +27,34 @@ export function splitPath(path: string): string[] {
 
   return segments;
 }
+
+export function withLeadingSlash(routePath: string) {
+  if (routePath.charCodeAt(0) !== 47) {
+    return '/' + routePath;
+  }
+
+  return routePath;
+}
+
+export function withTrailingSlash(routePath: string) {
+  const len = routePath.length;
+
+  if (
+    routePath === '/' ||
+    (len >= 2 && routePath.charCodeAt(len - 2) === 47 && routePath.charCodeAt(len - 1) === 63)
+  ) {
+    return routePath;
+  }
+
+  if (len >= 1 && routePath.charCodeAt(len - 1) === 47) {
+    return routePath + '?';
+  }
+
+  return routePath + '/?';
+}
+
+export function normalizeRoutePath(routePath: string, trailing = false) {
+  const normalized = withLeadingSlash(routePath);
+
+  return trailing ? withTrailingSlash(normalized) : normalized;
+}
