@@ -24,6 +24,7 @@ const ELEMENT_TOKENS = {
 const SEGMENT_TOKENS = {
   ...ELEMENT_TOKENS,
   [TokenType.ASTERISK]: true,
+  [TokenType.QUESTION]: true,
   [TokenType.DELIMETER]: true,
 } as Record<TokenType, boolean | undefined>;
 
@@ -63,7 +64,7 @@ export class Parser {
         lexer.nextToken();
       }
 
-      const segment = this.#parseSegment();
+      const segment = this.#parseSegment(segments.length);
 
       segments.push(segment);
 
@@ -90,7 +91,7 @@ export class Parser {
     return this.#parsed;
   }
 
-  #parseSegment(): Segment {
+  #parseSegment(index: number): Segment {
     const lexer = this.#lexer;
     const elements: Array<StringElement | PatternElement> = [];
 
@@ -108,9 +109,13 @@ export class Parser {
 
       lexer.nextToken();
       elements.push(element);
+    } else if (token.type === TokenType.QUESTION) {
+      const element = this.#createStringElement('');
+
+      elements.push(element);
     }
 
-    return this.#createSegment(elements);
+    return this.#createSegment(elements, index);
   }
 
   #parseElement(): StringElement | PatternElement {
@@ -180,7 +185,7 @@ export class Parser {
     return modifier;
   }
 
-  #createSegment(elements: Array<StringElement | PatternElement>) {
+  #createSegment(elements: Array<StringElement | PatternElement>, index: number) {
     const hasElements = elements.length > 0;
     const modifier = hasElements ? this.#parseModifier() : SegmentModifier.NONE;
     const isRepeatable = isRepeatableModifier(modifier);
@@ -203,6 +208,16 @@ export class Parser {
         throw new SyntaxError('Allow only optional modifier for fixed segment');
       }
 
+      if (
+        isOptional &&
+        elements[0].value === '' &&
+        (this.#lexer.peekToken().type !== TokenType.END || index === 0)
+      ) {
+        throw new SyntaxError(
+          'Optional slash (/?) is allowed only at the end and cannot be the first segment',
+        );
+      }
+
       return this.#createFixedSegment(elements[0], modifier);
     }
 
@@ -214,7 +229,9 @@ export class Parser {
   }
 
   #createFixedSegment(element: StringElement, modifier = SegmentModifier.NONE): FixedSegment {
-    this.#score += Score.FIXED;
+    const isTrailing = element.value === '' && modifier === SegmentModifier.OPTIONAL;
+
+    this.#score += isTrailing ? Score.TRAILING_SLASH : Score.FIXED;
 
     return { type: SegmentType.FIXED, element, modifier };
   }

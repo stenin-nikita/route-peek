@@ -39,6 +39,7 @@ export enum Score {
   OPTIONAL = -8,
   REPEATABLE = -20,
   CASE_SENSITIVE = 4,
+  TRAILING_SLASH = 7.3,
 }
 
 export interface StringElement {

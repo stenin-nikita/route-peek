@@ -324,6 +324,32 @@ describe('Parser', () => {
     });
   });
 
+  describe('trailing', () => {
+    it('optional slash at the end', () => {
+      const parser = new Parser('/a/?');
+
+      const result = parser.parse();
+
+      expect(result).toEqual({
+        input: '/a/?',
+        score: Score.FIXED + Score.TRAILING_SLASH + Score.OPTIONAL + Score.CASE_SENSITIVE,
+        segments: [
+          {
+            type: SegmentType.FIXED,
+            element: { type: ElementType.STRING, value: 'a' },
+            modifier: SegmentModifier.NONE,
+          },
+          {
+            type: SegmentType.FIXED,
+            element: { type: ElementType.STRING, value: '' },
+            modifier: SegmentModifier.OPTIONAL,
+          },
+        ],
+        capturingGroups: [],
+      });
+    });
+  });
+
   describe('errors', () => {
     it('empty name', () => {
       const parser = new Parser('/{}');
@@ -349,12 +375,24 @@ describe('Parser', () => {
       }).toThrowError('Empty name');
     });
 
-    it('invalid segment', () => {
+    it('optional slash at the start', () => {
       const parser = new Parser('/?');
 
       expect(() => {
         parser.parse();
-      }).toThrowError('Expected END or DELIMETER, got QUESTION');
+      }).toThrowError(
+        'Optional slash (/?) is allowed only at the end and cannot be the first segment',
+      );
+    });
+
+    it('optional slash not at the end', () => {
+      const parser = new Parser('/a/?/b');
+
+      expect(() => {
+        parser.parse();
+      }).toThrowError(
+        'Optional slash (/?) is allowed only at the end and cannot be the first segment',
+      );
     });
 
     it('complex repeating segment', () => {
