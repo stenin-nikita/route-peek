@@ -2,6 +2,7 @@ import { RouteMatcher, type RouteMatcherOptions } from './route-matcher';
 import { RouteRecord } from './route-record';
 
 export class RouteMatcherBuilder<T = void> {
+  #counter = 1;
   #records: RouteRecord<T>[] = [];
 
   #ignoreCase = false;
@@ -13,7 +14,7 @@ export class RouteMatcherBuilder<T = void> {
   }
 
   add(routePath: string, payload: T) {
-    const record = new RouteRecord(routePath, payload);
+    const record = new RouteRecord(this.#counter++, routePath, payload);
 
     this.#records.push(record);
 

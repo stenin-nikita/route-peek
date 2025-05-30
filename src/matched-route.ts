@@ -3,6 +3,7 @@ import type { RouteRecord } from './route-record';
 import type { MatchedParams } from './types';
 
 export interface MatchedRouteData<T = void> {
+  id: number;
   path: string;
   route: string;
   params: MatchedParams;
@@ -20,6 +21,10 @@ export class MatchedRoute<TPayload = void> {
     this.#path = path;
     this.#record = record;
     this.#matched = matched;
+  }
+
+  get id() {
+    return this.#record.id;
   }
 
   get path() {
@@ -45,9 +50,10 @@ export class MatchedRoute<TPayload = void> {
   }
 
   toJSON(): MatchedRouteData<TPayload> {
-    const { path, route, params, payload, score } = this;
+    const { id, path, route, params, payload, score } = this;
 
     return {
+      id,
       path,
       route,
       params,

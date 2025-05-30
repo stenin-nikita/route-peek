@@ -3,15 +3,21 @@ import type { PatternMatch } from './pattern';
 import type { MatchedParams, PathRoot } from './types';
 
 export class RouteRecord<T = void> {
+  #id: number;
   #ast: PathRoot;
 
   #payload: T;
 
-  constructor(routePath: string, payload: T) {
+  constructor(id: number, routePath: string, payload: T) {
     const parser = new Parser(routePath);
 
+    this.#id = id;
     this.#ast = parser.parse();
     this.#payload = payload;
+  }
+
+  get id() {
+    return this.#id;
   }
 
   get routePath() {

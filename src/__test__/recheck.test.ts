@@ -30,7 +30,7 @@ const TEST_CASES = [
 describe('recheck', () => {
   it.each(TEST_CASES)('$routePath should be safe', ({ routePath }) => {
     const nfa = new NFA();
-    const record = new RouteRecord(routePath, undefined);
+    const record = new RouteRecord(0, routePath, undefined);
 
     nfa.addRouteRecord(record);
 
